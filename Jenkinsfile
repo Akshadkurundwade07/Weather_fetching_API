@@ -41,7 +41,7 @@ pipeline {
                 bat """
                     call venv\\Scripts\\activate.bat
                     start /B uvicorn main:app --host 0.0.0.0 --port 8000
-                    timeout /t 3
+                    ping -n 4 127.0.0.1 > nul
                     echo App started on port 8000
                 """
             }
