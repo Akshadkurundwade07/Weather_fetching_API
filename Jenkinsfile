@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        PYTHON = "C:\\Users\\HP\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe"
+    }
+
     stages {
 
         stage('Checkout') {
@@ -13,33 +17,33 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 echo 'Installing Python packages...'
-                bat '''
-                    python -m venv venv
-                    call venv\\Scripts\\activate
+                bat """
+                    "%PYTHON%" -m venv venv
+                    call venv\\Scripts\\activate.bat
                     pip install -r requirements.txt
-                '''
+                """
             }
         }
 
         stage('Run Tests') {
             steps {
                 echo 'Running tests...'
-                bat '''
-                    call venv\\Scripts\\activate
+                bat """
+                    call venv\\Scripts\\activate.bat
                     pytest test_main.py -v
-                '''
+                """
             }
         }
 
         stage('Start App') {
             steps {
                 echo 'Starting FastAPI server...'
-                bat '''
-                    call venv\\Scripts\\activate
+                bat """
+                    call venv\\Scripts\\activate.bat
                     start /B uvicorn main:app --host 0.0.0.0 --port 8000
                     timeout /t 3
                     echo App started on port 8000
-                '''
+                """
             }
         }
 
