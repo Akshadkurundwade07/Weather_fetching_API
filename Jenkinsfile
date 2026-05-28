@@ -13,9 +13,9 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 echo 'Installing Python packages...'
-                sh '''
-                    python3 -m venv venv
-                    . venv/bin/activate
+                bat '''
+                    python -m venv venv
+                    call venv\\Scripts\\activate
                     pip install -r requirements.txt
                 '''
             }
@@ -24,9 +24,9 @@ pipeline {
         stage('Run Tests') {
             steps {
                 echo 'Running tests...'
-                sh '''
-                    . venv/bin/activate
-                    pytest tests/ -v
+                bat '''
+                    call venv\\Scripts\\activate
+                    pytest test_main.py -v
                 '''
             }
         }
@@ -34,11 +34,11 @@ pipeline {
         stage('Start App') {
             steps {
                 echo 'Starting FastAPI server...'
-                sh '''
-                    . venv/bin/activate
-                    nohup uvicorn main:app --host 0.0.0.0 --port 8000 &
-                    sleep 3
-                    echo "App started on port 8000"
+                bat '''
+                    call venv\\Scripts\\activate
+                    start /B uvicorn main:app --host 0.0.0.0 --port 8000
+                    timeout /t 3
+                    echo App started on port 8000
                 '''
             }
         }
@@ -46,7 +46,7 @@ pipeline {
         stage('Smoke Test') {
             steps {
                 echo 'Checking if app is running...'
-                sh 'curl -f http://localhost:8000/health'
+                bat 'curl -f http://localhost:8000/health'
             }
         }
     }
